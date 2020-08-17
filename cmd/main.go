@@ -13,7 +13,7 @@ import (
 )
 
 // ListDeployments : Login to current cluster context and count/list the deployments in there
-func ListDeployments() (clientset *kubernetes.Clientset) {
+func ListDeployments(cluster string) (clientset *kubernetes.Clientset, err error) {
 	var kubeconfig *string
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
@@ -22,16 +22,22 @@ func ListDeployments() (clientset *kubernetes.Clientset) {
 	}
 	flag.Parse()
 
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		&clientcmd.ClientConfigLoadingRules{ExplicitPath: *kubeconfig},
+		&clientcmd.ConfigOverrides{
+			CurrentContext: cluster,
+		}).ClientConfig()
 	if err != nil {
 		panic(err)
 	}
+
 	clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err)
 	}
+
 	deployments, err := clientset.ExtensionsV1beta1().Deployments("").List(metav1.ListOptions{})
-	fmt.Printf("There are %d deployments in the cluster:\n", len(deployments.Items))
+	fmt.Printf("There are %d deployments in the cluster %v:\n\n", len(deployments.Items), cluster)
 	for _, deployment := range deployments.Items {
 		fmt.Printf("%+v\n", deployment.Name)
 	}
@@ -39,7 +45,7 @@ func ListDeployments() (clientset *kubernetes.Clientset) {
 }
 
 // ListPods : Login to current cluster context and count/list the pods in there
-func ListPods() (clientset *kubernetes.Clientset) {
+func ListPods(cluster string) (clientset *kubernetes.Clientset, err error) {
 	var kubeconfig *string
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
@@ -48,7 +54,11 @@ func ListPods() (clientset *kubernetes.Clientset) {
 	}
 	flag.Parse()
 
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
+	config, err := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		&clientcmd.ClientConfigLoadingRules{ExplicitPath: *kubeconfig},
+		&clientcmd.ConfigOverrides{
+			CurrentContext: cluster,
+		}).ClientConfig()
 	if err != nil {
 		panic(err)
 	}
@@ -57,7 +67,7 @@ func ListPods() (clientset *kubernetes.Clientset) {
 		panic(err)
 	}
 	pods, err := clientset.CoreV1().Pods("").List(metav1.ListOptions{})
-	fmt.Printf("There are %d pods in the cluster:\n", len(pods.Items))
+	fmt.Printf("There are %d pods in the cluster %v:\n\n", len(pods.Items), cluster)
 	for _, pod := range pods.Items {
 		fmt.Printf("%+v\n", pod.Name)
 	}

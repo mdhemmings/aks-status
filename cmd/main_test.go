@@ -6,23 +6,21 @@ import (
 )
 
 func TestListDeployments(t *testing.T) {
-	got := ListDeployments()
-	want := ListDeployments()
-	if got != want {
+	_, err := ListDeployments("aks-mdh1we-admin")
+	if err != nil {
 		t.Errorf("Oh crap")
 	}
-	if got == want {
-		fmt.Printf("Got %v which was correct", want)
+	if err == nil {
+		fmt.Printf("\n\nAwesomesauce!!\n")
 	}
 }
 
 func TestListPods(t *testing.T) {
-	got := ListPods()
-	want := ListPods()
-	if got != want {
+	_, err := ListPods("aks-mdh1we-admin")
+	if err != nil {
 		t.Errorf("Oh crap")
 	}
-	if got == want {
-		fmt.Printf("Got %v which was correct", want)
+	if err == nil {
+		fmt.Printf("\n\nAwesomesauce!!\n")
 	}
 }
