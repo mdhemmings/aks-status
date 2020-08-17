@@ -15,7 +15,7 @@ import (
 
 // ListDeployments : Login to current cluster context and count/list the deployments in there
 func ListDeployments(cluster string) (clientset *kubernetes.Clientset, err error) {
-	config, _ := setConfig(cluster)
+	config, _ := buildConfig(cluster)
 	clientset, err = kubernetes.NewForConfig(config)
 	if err != nil {
 		panic(err)
@@ -31,7 +31,7 @@ func ListDeployments(cluster string) (clientset *kubernetes.Clientset, err error
 
 // ListPods : Login to current cluster context and count/list the pods in there
 func ListPods(cluster string) (clientset *kubernetes.Clientset, err error) {
-	config, err := setConfig(cluster)
+	config, err := buildConfig(cluster)
 	if err != nil {
 		panic(err)
 	}
@@ -54,7 +54,7 @@ func homeDir() string {
 	return os.Getenv("USERPROFILE") // windows
 }
 
-func setConfig(cluster string) (config *rest.Config, err error) {
+func buildConfig(cluster string) (config *rest.Config, err error) {
 	var kubeconfig *string
 	if home := homedir.HomeDir(); home != "" {
 		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
