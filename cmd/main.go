@@ -32,7 +32,6 @@ func ListDeployments() (clientset *kubernetes.Clientset) {
 	}
 	deployments, err := clientset.ExtensionsV1beta1().Deployments("").List(metav1.ListOptions{})
 	fmt.Printf("There are %d deployments in the cluster:\n", len(deployments.Items))
-	//	fmt.Printf("They are %v\n", deployments.Items)
 	for _, deployment := range deployments.Items {
 		fmt.Printf("%+v\n", deployment.Name)
 	}
