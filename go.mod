@@ -1,4 +1,4 @@
-module guestline.app/status
+module status
 
 go 1.15
 
